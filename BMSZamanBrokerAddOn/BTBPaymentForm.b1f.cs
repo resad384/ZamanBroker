@@ -16,6 +16,8 @@ namespace BMSZamanBrokerAddOn
         private readonly SalesOpportunities _opportunity =
             (SalesOpportunities) SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
                 .oSalesOpportunities);
+        private  SalesOpportunities _opportunityLines = (SalesOpportunities)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
+            .oSalesOpportunities);
         private string _selectedEmpId = "";
         private StaticText StaticText1;
         private EditText EditText0;
@@ -445,21 +447,23 @@ namespace BMSZamanBrokerAddOn
             if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
 
             SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);
-            _opportunity.Lines.Add();
-            _opportunity.Lines.SetCurrentLine(_opportunity.Lines.Count-1);
-            _opportunity.Lines.StartDate = DateTime.Today;
-            _opportunity.Lines.ClosingDate = DateTime.Today;
-            _opportunity.Lines.SalesPerson = _opportunity.SalesPerson;
-            _opportunity.Lines.StageKey = 4;
-            _opportunity.Lines.DocumentType = BoAPARDocumentTypes.bodt_Invoice;
-            _opportunity.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
-            _opportunity.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
-            _opportunity.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
-            //_opportunity.Update();
+
+            _opportunityLines.GetByKey(_opportunityNumber);
+            _opportunityLines.Lines.Add();
+            _opportunityLines.Lines.SetCurrentLine(_opportunityLines.Lines.Count-1);
+            _opportunityLines.Lines.StartDate = DateTime.Today;
+            _opportunityLines.Lines.ClosingDate = DateTime.Today;
+            _opportunityLines.Lines.SalesPerson = _opportunity.SalesPerson;
+            _opportunityLines.Lines.StageKey = 4;
+            _opportunityLines.Lines.DocumentType = BoAPARDocumentTypes.bodt_Invoice;
+            _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
+            _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
+            _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+            _opportunityLines.Update();
 
 
-            //SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
-            //if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
+            SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
+            if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
 
             //partners
             foreach (var partner in partners)
@@ -502,21 +506,22 @@ namespace BMSZamanBrokerAddOn
                 if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
 
                 SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);
-                _opportunity.Lines.Add();
-                _opportunity.Lines.SetCurrentLine(_opportunity.Lines.Count-1);
-                _opportunity.Lines.StartDate = DateTime.Today;
-                _opportunity.Lines.ClosingDate = DateTime.Today;
-                _opportunity.Lines.SalesPerson = _opportunity.SalesPerson;
-                _opportunity.Lines.StageKey = 4;
-                _opportunity.Lines.DocumentType = BoAPARDocumentTypes.bodt_PurchaseInvoice;
-                _opportunity.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
-                _opportunity.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
-                _opportunity.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
-                //_opportunity.Update();
+                _opportunityLines.GetByKey(_opportunityNumber);
+                _opportunityLines.Lines.Add();
+                _opportunityLines.Lines.SetCurrentLine(_opportunityLines.Lines.Count - 1);
+                _opportunityLines.Lines.StartDate = DateTime.Today;
+                _opportunityLines.Lines.ClosingDate = DateTime.Today;
+                _opportunityLines.Lines.SalesPerson = _opportunity.SalesPerson;
+                _opportunityLines.Lines.StageKey = 4;
+                _opportunityLines.Lines.DocumentType = BoAPARDocumentTypes.bodt_PurchaseInvoice;
+                _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
+                _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
+                _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+                _opportunityLines.Update();
 
 
-                //SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
-                //if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
+                SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
+                if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
 
                 //ar for patner
                 var ARInvoiceForPartner = (Documents)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.oInvoices);
@@ -555,25 +560,24 @@ namespace BMSZamanBrokerAddOn
                 if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
 
                 SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);
-                _opportunity.Lines.Add();
-                _opportunity.Lines.SetCurrentLine(_opportunity.Lines.Count-1);
-                _opportunity.Lines.StartDate = DateTime.Today;
-                _opportunity.Lines.ClosingDate = DateTime.Today;
-                _opportunity.Lines.SalesPerson = _opportunity.SalesPerson;
-                _opportunity.Lines.StageKey = 4;
-                _opportunity.Lines.DocumentType = BoAPARDocumentTypes.bodt_Invoice;
-                _opportunity.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
-                _opportunity.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
-                _opportunity.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
-                //_opportunity.Update();
+                _opportunityLines.GetByKey(_opportunityNumber);
+                _opportunityLines.Lines.Add();
+                _opportunityLines.Lines.SetCurrentLine(_opportunityLines.Lines.Count - 1);
+                _opportunityLines.Lines.StartDate = DateTime.Today;
+                _opportunityLines.Lines.ClosingDate = DateTime.Today;
+                _opportunityLines.Lines.SalesPerson = _opportunity.SalesPerson;
+                _opportunityLines.Lines.StageKey = 4;
+                _opportunityLines.Lines.DocumentType = BoAPARDocumentTypes.bodt_Invoice;
+                _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
+                _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
+                _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+                _opportunityLines.Update();
 
-                //SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
-                //if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
+                SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
+                if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
             }
 
-            _opportunity.Update();
-            SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
-            if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
+
 
             return new Result {Code = errCode, Message = errMSG};
         }
