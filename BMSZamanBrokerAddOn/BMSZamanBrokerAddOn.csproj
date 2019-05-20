@@ -62,6 +62,9 @@
       <DependentUpon>Opportunity.b1f</DependentUpon>
     </Compile>
     <Compile Include="OpportunityRepository.cs" />
+    <Compile Include="Payments.b1f.cs">
+      <DependentUpon>Payments.b1f</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +73,9 @@
     </None>
     <None Include="Opportunity.b1f__orig_srf">
       <DependentUpon>Opportunity.b1f</DependentUpon>
+    </None>
+    <None Include="Payments.b1f">
+      <FormCategory>UDOForm</FormCategory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
