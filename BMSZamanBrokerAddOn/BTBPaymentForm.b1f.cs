@@ -19,7 +19,8 @@ namespace BMSZamanBrokerAddOn
                 .oSalesOpportunities);
         private  SalesOpportunities _opportunityLines = (SalesOpportunities)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
             .oSalesOpportunities);
-        private string _selectedEmpId = "";
+        private string _selectedBP = "";
+        private string _selectedPList = "";
         private StaticText StaticText1;
         private EditText EditText0;
         private LinkedButton LinkedButton0;
@@ -74,6 +75,10 @@ namespace BMSZamanBrokerAddOn
         private EditText EditText19;
         private Matrix Matrix0;
         private Folder Folder3;
+        private StaticText StaticText23;
+        private EditText EditText15;
+        private LinkedButton LinkedButton3;
+
         public BTBPaymentForm(int opportunityNumber)
         {
             _opportunityNumber = opportunityNumber;
@@ -103,8 +108,8 @@ namespace BMSZamanBrokerAddOn
                     (BusinessPartners) SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
                         .oBusinessPartners);
                 businessPartners.GetByKey(_opportunity.CardCode);
-                businessPartners.ContactEmployees.SetCurrentLine(_opportunity.ContactPerson - 1);
-                EditText5.Value = businessPartners.ContactEmployees.Name;
+               // businessPartners.ContactEmployees.SetCurrentLine(_opportunity.ContactPerson - 1);
+              //  EditText5.Value = businessPartners.ContactEmployees.Name;
 
                 EditText7.Value = _opportunity.StartDate.ToString("dd.MM.yy");
 
@@ -193,6 +198,10 @@ namespace BMSZamanBrokerAddOn
             this.StaticText22 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_25").Specific));
             this.EditText19 = ((SAPbouiCOM.EditText)(this.GetItem("Item_40").Specific));
             this.EditText19.ChooseFromListAfter += new SAPbouiCOM._IEditTextEvents_ChooseFromListAfterEventHandler(this.EditText19_ChooseFromListAfter);
+            this.StaticText23 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_11").Specific));
+            this.EditText15 = ((SAPbouiCOM.EditText)(this.GetItem("Item_26").Specific));
+            this.EditText15.ChooseFromListAfter += new SAPbouiCOM._IEditTextEvents_ChooseFromListAfterEventHandler(this.EditText15_ChooseFromListAfter);
+            this.LinkedButton3 = ((SAPbouiCOM.LinkedButton)(this.GetItem("Item_41").Specific));
             this.OnCustomInitialize();
 
         }
@@ -251,24 +260,33 @@ namespace BMSZamanBrokerAddOn
         private void EditText15_ChooseFromListAfter(object sboObject, SBOItemEventArg pVal)
         {
             if (((SBOChooseFromListEventArg) pVal).SelectedObjects != null)
-                _selectedEmpId = ((SBOChooseFromListEventArg) pVal).SelectedObjects.GetValue(0, 0)
+                _selectedPList = ((SBOChooseFromListEventArg) pVal).SelectedObjects.GetValue(0, 0)
                     .ToString();
         }
         private void EditText19_ChooseFromListAfter(object sboObject, SBOItemEventArg pVal)
         {
             if (((SAPbouiCOM.SBOChooseFromListEventArg)(pVal)).SelectedObjects != null)
-                _selectedEmpId = ((SAPbouiCOM.SBOChooseFromListEventArg)(pVal)).SelectedObjects.GetValue(0, 0)
+                _selectedBP = ((SAPbouiCOM.SBOChooseFromListEventArg)(pVal)).SelectedObjects.GetValue(0, 0)
                     .ToString();
 
         }
+
         private void Form_ActivateAfter(SBOItemEventArg pVal)
         {
-            EditText19.Value = _selectedEmpId;
-            var businessPartners =
-                (SAPbobsCOM.BusinessPartners)SapDiConnection.Instance.GetBusinessObject(SAPbobsCOM.BoObjectTypes
-                    .oBusinessPartners);
-            businessPartners.GetByKey(_selectedEmpId);
-            StaticText22.Caption = businessPartners.CardName;
+            if (EditText19.Value != _selectedBP)
+            {
+                EditText19.Value = _selectedBP;
+                var businessPartners =
+                    (SAPbobsCOM.BusinessPartners) SapDiConnection.Instance.GetBusinessObject(SAPbobsCOM.BoObjectTypes
+                        .oBusinessPartners);
+                businessPartners.GetByKey(_selectedBP);
+                StaticText22.Caption = businessPartners.CardName;
+            }
+
+            if (EditText15.Value != _selectedPList)
+            {
+                EditText15.Value = _selectedPList;
+            }
         }
         private void Button0_PressedAfter(object sboObject, SBOItemEventArg pVal)
         {
@@ -300,6 +318,13 @@ namespace BMSZamanBrokerAddOn
                 return;
             }
 
+
+            if (String.IsNullOrEmpty(EditText15.Value))
+            {
+                Application.SBO_Application.SetStatusBarMessage("Please Select Payment List");
+                return;
+            }
+
             try
             {
                 var result = new Result();
@@ -321,7 +346,7 @@ namespace BMSZamanBrokerAddOn
 
 
                 //create JE schedule
-                result = CreateJESchedule();
+                //result = CreateJESchedule();
 
                 if (result.Code == 0)
                 {
@@ -342,7 +367,6 @@ namespace BMSZamanBrokerAddOn
                 Application.SBO_Application.MessageBox(exception.Message);
             }
         }
-
         private Result CreateJESchedule()
         {
             int errCode;
@@ -364,7 +388,6 @@ namespace BMSZamanBrokerAddOn
             SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
             return new Result { Code = errCode, Message = errMSG };
         }
-
         private Result CreateType1()
         {
             int errCode;
@@ -381,7 +404,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
-
+            ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
             for (var i = 1; i <= Matrix0.RowCount; i++)
             {
                 ARInvoice.Lines.ItemCode = ((EditText) Matrix0.Columns.Item(1).Cells.Item(i).Specific).Value;
@@ -420,6 +443,7 @@ namespace BMSZamanBrokerAddOn
             _opportunity.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
             _opportunity.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
             _opportunity.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+            _opportunity.Lines.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
 
             _opportunity.Update();
 
@@ -444,6 +468,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.DocDate = InternalConverters.EditTextToDateTime(EditText9.Value);
             ARInvoice.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
+            ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
 
             for (var i = 1; i <= Matrix0.RowCount; i++)
@@ -487,6 +512,7 @@ namespace BMSZamanBrokerAddOn
             _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
             _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
             _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+            _opportunity.Lines.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
             _opportunityLines.Update();
 
 
@@ -504,6 +530,7 @@ namespace BMSZamanBrokerAddOn
                 APInvoiceForPartner.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
                 APInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 APInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
+                APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -545,6 +572,7 @@ namespace BMSZamanBrokerAddOn
                 _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
                 _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
                 _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+                _opportunity.Lines.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
                 _opportunityLines.Update();
 
 
@@ -558,6 +586,7 @@ namespace BMSZamanBrokerAddOn
                 ARInvoiceForPartner.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
                 ARInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 ARInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
+                APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -599,6 +628,7 @@ namespace BMSZamanBrokerAddOn
                 _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
                 _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
                 _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+                _opportunity.Lines.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
                 _opportunityLines.Update();
 
                 SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
@@ -625,6 +655,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
+            ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
 
             for (var i = 1; i <= Matrix0.RowCount; i++)
             {
@@ -667,6 +698,7 @@ namespace BMSZamanBrokerAddOn
             _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
             _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
             _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+            _opportunity.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
             _opportunityLines.Update();
 
 
@@ -684,6 +716,7 @@ namespace BMSZamanBrokerAddOn
                 APInvoiceForPartner.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
                 APInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 APInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
+                APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -725,6 +758,7 @@ namespace BMSZamanBrokerAddOn
                 _opportunityLines.Lines.DocumentNumber = Convert.ToInt32(newObjectCode);
                 _opportunityLines.Lines.DataOwnershipfield = _opportunity.DataOwnershipfield;
                 _opportunityLines.Lines.MaxLocalTotal = _opportunity.MaxLocalTotal;
+                _opportunity.UserFields.Fields.Item("U_PAYLIST").Value = EditText15.Value;
                 _opportunityLines.Update();
 
 
@@ -734,5 +768,7 @@ namespace BMSZamanBrokerAddOn
             }
             return new Result { Code = errCode, Message = errMSG };
         }
+
+
     }
 }
