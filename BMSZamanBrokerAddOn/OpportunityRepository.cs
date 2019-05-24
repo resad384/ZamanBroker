@@ -39,12 +39,24 @@ namespace BMSZamanBrokerAddOn
             return InternalConverters.ConvertStringToDecimal(recordset.Fields.Item(0).Value.ToString());
         }
 
+        public static decimal GetOpportunityRestAmount(int opprotunityId)
+        {
+            var recordset = (Recordset)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.BoRecordset);
+            string sql = "select \"MaxSumLoc\" - (select IFNULL(SUM(case when  t1.\"DocCur\" = \'AZN\' then t1.\"DocTotal\" else t1.\"DocTotalFC\" end),0)  \"Total\" from \"OPR1\"  t0\r\nleft join \"OINV\" t1 on t0.\"DocNumber\" = t1.\"DocNum\"\r\nwhere  t0.\"OpprId\" = \'{0}\'  and t0.\"ObjType\" = 13)  from \"OOPR\" where  \"OpprId\" = \'{0}\'";
+            sql = String.Format(sql, opprotunityId);
+            recordset.DoQuery(sql);
+            recordset.MoveFirst();
+
+            return InternalConverters.ConvertStringToDecimal(recordset.Fields.Item(0).Value.ToString());
+        }
+
+
         public static IList<Partner> GetPartnerList(int opprotunityId)
         {
             IList<Partner> partners = new List<Partner>();
 
             var recordset = (Recordset)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.BoRecordset);
-            string sql = "select t1.\"RelatCard\", t1.\"U_BPdatefrom\", t1.\"U_BPdateto\", t1.\"U_BPrate\", t1.\"U_BPamount\", t2.\"ConnBP\" from \"ZB_QAS\".\"OPR2\" t1 \r\nleft join \"OCRD\" t2  on t1.\"RelatCard\" = t2.\"CardCode\"\r\nwhere \"OpportId\" = \'{0}\'";
+            string sql = "select t1.\"RelatCard\",  t1.\"U_BPrate\", t1.\"U_BPamount\", t2.\"ConnBP\" from \"OPR2\" t1 \r\nleft join \"OCRD\" t2  on t1.\"RelatCard\" = t2.\"CardCode\"\r\nwhere \"OpportId\" = \'{0}\'";
 
             sql = String.Format(sql, opprotunityId);
             recordset.DoQuery(sql);
@@ -54,11 +66,9 @@ namespace BMSZamanBrokerAddOn
                 partners.Add(new Partner
                 {
                     Customer = recordset.Fields.Item(0).Value.ToString(),
-                    FromDate = Convert.ToDateTime(recordset.Fields.Item(1).Value),
-                    ToDate = Convert.ToDateTime(recordset.Fields.Item(2).Value),
-                    Rate = Convert.ToInt32(recordset.Fields.Item(3).Value),
-                    Amount = Convert.ToDecimal(recordset.Fields.Item(4).Value),
-                    Vendor = recordset.Fields.Item(5).Value.ToString()
+                    Rate = Convert.ToInt32(recordset.Fields.Item(1).Value),
+                    Amount = Convert.ToDecimal(recordset.Fields.Item(2).Value),
+                    Vendor = recordset.Fields.Item(3).Value.ToString()
                 });
                 recordset.MoveNext();
             }
@@ -76,6 +86,14 @@ namespace BMSZamanBrokerAddOn
             return Convert.ToInt32(recordset.Fields.Item(0).Value.ToString());
         }
 
+        public static int GetNewCodeForPlanningJE()
+        {
+            var recordset = (Recordset)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.BoRecordset);
+            string sql = "select IFNULL(MAX(CAST(\"Code\"as int)),0)+1 from \"@BMSINSPSCH\" ";
+            recordset.DoQuery(sql);
+            recordset.MoveFirst();
+            return Convert.ToInt32(recordset.Fields.Item(0).Value.ToString());
+        }
 
     }
 }

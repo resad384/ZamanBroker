@@ -10,7 +10,7 @@ namespace BMSZamanBrokerAddOn.Model
     {
         insuranceBrokerage = 601001,
         reInsuranceBrokerage = 601002,
-        clearingFirst = 546001,
+        clearingFirst = 542001,
         clearingSecond = 523001,
 
     }

@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Helpers\InternalConverters.cs" />
     <Compile Include="Helpers\SapDiConnection.cs" />
+    <Compile Include="Model\AccountAction.cs" />
     <Compile Include="Model\AccountCodes.cs" />
     <Compile Include="Model\Item.cs" />
     <Compile Include="Model\Partner.cs" />
