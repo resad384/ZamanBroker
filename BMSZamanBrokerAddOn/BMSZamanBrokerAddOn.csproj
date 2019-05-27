@@ -46,6 +46,7 @@
     <Reference Include="SAPBusinessOneSDK" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\ComboboxValues.cs" />
     <Compile Include="Repository\SalesPersonRepository.cs" />
     <None Include="BTBPaymentForm.b1f">
       <FormCategory>UserForm</FormCategory>

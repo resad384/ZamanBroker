@@ -15,6 +15,7 @@ namespace BMSZamanBrokerAddOn
     internal class BTBPaymentForm : UserFormBase
     {
         private readonly int _opportunityType ;
+        private  string _distrule = "";
         private readonly int _opportunityNumber;
         private double _contractMonths = 0;
         private readonly SalesOpportunities _opportunity =
@@ -132,7 +133,7 @@ namespace BMSZamanBrokerAddOn
 
                 EditText16.Value =  InternalConverters.StringToDateTypeEdittext(_opportunity.UserFields.Fields.Item("U_ctrctdateto").Value.ToString());
                 EditText17.Value =  InternalConverters.StringToDateTypeEdittext(_opportunity.UserFields.Fields.Item("U_cntrctdateFrom").Value.ToString());
-
+                _distrule = _opportunity.UserFields.Fields.Item("U_DistRule").Value.ToString();
                 _contractMonths = InternalConverters.EditTextToDateTime(EditText17.Value).Subtract(InternalConverters.EditTextToDateTime(EditText16.Value)).Days /
                                   (365.25 / 12);
                 _contractMonths = Math.Round(_contractMonths);
@@ -544,7 +545,10 @@ namespace BMSZamanBrokerAddOn
                 }
 
                 ARInvoice.Lines.Price =  (double) ((InternalConverters.ConvertStringToDecimal(EditText12.Value) * (decimal) _opportunity.GrossProfit) / 100);
-                                               
+
+                ARInvoice.Lines.CostingCode = "B2B";
+                ARInvoice.Lines.CostingCode2 = _distrule;
+
                 ARInvoice.Lines.Add();
             }
             
@@ -598,6 +602,10 @@ namespace BMSZamanBrokerAddOn
                 }
 
                 ARInvoice.Lines.Price = (double)(InternalConverters.ConvertStringToDecimal(EditText12.Value));
+
+                ARInvoice.Lines.CostingCode = "B2B";
+                ARInvoice.Lines.CostingCode2 = _distrule;
+
                 ARInvoice.Lines.Add();
             }
 
@@ -646,6 +654,8 @@ namespace BMSZamanBrokerAddOn
                     }
 
                     APInvoiceForPartner.Lines.Price = (double)((InternalConverters.ConvertStringToDecimal(EditText12.Value) / partners.Sum(a => a.Rate)) * partner.Rate);
+                    APInvoiceForPartner.Lines.CostingCode = "B2B";
+                    APInvoiceForPartner.Lines.CostingCode2 = _distrule;
                     APInvoiceForPartner.Lines.Add();
                 }
 
@@ -689,6 +699,8 @@ namespace BMSZamanBrokerAddOn
                     }
 
                     ARInvoiceForPartner.Lines.Price = (double)(((InternalConverters.ConvertStringToDecimal(EditText12.Value) / partners.Sum(a => a.Rate)) * partner.Rate) * (decimal)_opportunity.GrossProfit / 100);
+                    ARInvoiceForPartner.Lines.CostingCode = "B2B";
+                    ARInvoiceForPartner.Lines.CostingCode2 = _distrule;
                     ARInvoiceForPartner.Lines.Add();
                 }
 
@@ -745,6 +757,8 @@ namespace BMSZamanBrokerAddOn
                 }
 
                 ARInvoice.Lines.Price = (double) InternalConverters.ConvertStringToDecimal(EditText12.Value);
+                ARInvoice.Lines.CostingCode = "B2B";
+                ARInvoice.Lines.CostingCode2 = _distrule;
                 ARInvoice.Lines.Add();
             }
 
@@ -791,6 +805,8 @@ namespace BMSZamanBrokerAddOn
                     }
 
                     APInvoiceForPartner.Lines.Price = (double) ((InternalConverters.ConvertStringToDecimal(EditText12.Value) / 100 ) * partner.Rate);
+                    APInvoiceForPartner.Lines.CostingCode = "B2B";
+                    APInvoiceForPartner.Lines.CostingCode2 = _distrule;
                     APInvoiceForPartner.Lines.Add();
                 }
 

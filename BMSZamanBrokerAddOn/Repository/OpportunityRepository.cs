@@ -96,5 +96,25 @@ namespace BMSZamanBrokerAddOn
             return Convert.ToInt32(recordset.Fields.Item(0).Value.ToString());
         }
 
+        public static IList<ComboboxValues> GetDistRuleListForB2B()
+        {
+            var values = new List<ComboboxValues>();
+            var recordset = (Recordset)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.BoRecordset);
+            string sql = "select \"OcrCode\", \"OcrName\" from \"ZB_QAS\".\"OOCR\"  where \"OcrCode\" in (\'Energy\',\'NonEnerg\',\'DirectLL\')";
+            recordset.DoQuery(sql);
+
+            for (int i = 0; i < recordset.RecordCount; i++)
+            {
+                values.Add(new ComboboxValues()
+                {
+                    Code = recordset.Fields.Item(0).Value.ToString(),
+                    Name = recordset.Fields.Item(1).Value.ToString()
+                });
+                recordset.MoveNext();
+            }
+
+            return values;
+        }
+
     }
 }

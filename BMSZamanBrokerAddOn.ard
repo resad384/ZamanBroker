@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AddOnRegData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SlientInstallation="No" SlientUpgrade="No" Partnernmsp="BMSZamanBrokerAddOn2" SchemaVersion="3.0" Type="" MultipleVersion="false" OnDemand="" OnPremise="" ExtName="BMSZamanBrokerAddOn2" ExtVersion="1.0" Contdata="" Partner="BMS" DBType="HANA" ClientType="B">
+  <Validity>
+    <SBOCompatibility>
+      <Version From="" To="" />
+    </SBOCompatibility>
+  </Validity>
+  <Configuration>
+    <Repository>
+      <Properties />
+    </Repository>
+    <Deployment>
+      <Properties />
+    </Deployment>
+    <Assignment>
+      <Properties />
+    </Assignment>
+  </Configuration>
+  <Addons>
+    <Addon Name="" Group="" ForceFlag="" Visible="" AutoAssign="" SelfUpgrd="">
+      <x86 AddonExe="C:\Users\rashad.muradli\Desktop\CSSHR\BMSZamanBrokerAddOn\BMSZamanBrokerAddOn\bin\Debug\BMSZamanBrokerAddOn.exe" AddonSig="">
+        <Installation>
+          <Files>
+            <File FileName="BMSZamanBrokerAddOn.b1s">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.exe">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.pdb">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Installation>
+        <Uninstallation>
+          <Files>
+            <File FileName="BMSZamanBrokerAddOn.b1s">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.exe">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.pdb">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Uninstallation>
+      </x86>
+      <x64 AddonExe="C:\Users\rashad.muradli\Desktop\CSSHR\BMSZamanBrokerAddOn\BMSZamanBrokerAddOn\bin\Debug\BMSZamanBrokerAddOn.exe" AddonSig="">
+        <Installation>
+          <Files>
+            <File FileName="BMSZamanBrokerAddOn.b1s">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.exe">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.pdb">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Installation>
+        <Uninstallation>
+          <Files>
+            <File FileName="BMSZamanBrokerAddOn.b1s">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.exe">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.pdb">
+              <Actions />
+            </File>
+            <File FileName="BMSZamanBrokerAddOn.vshost.exe">
+              <Actions />
+            </File>
+            <File FileName="SAPBusinessOneSDK.dll">
+              <Actions />
+            </File>
+          </Files>
+        </Uninstallation>
+      </x64>
+    </Addon>
+  </Addons>
+  <XApps>
+    <XApp Name="" Path="" FileName="" />
+  </XApps>
+  <UDQs>
+    <UDQ udqname="">
+      <Hana FileName="" />
+    </UDQ>
+  </UDQs>
+</AddOnRegData>
