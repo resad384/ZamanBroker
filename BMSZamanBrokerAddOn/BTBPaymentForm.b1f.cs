@@ -668,7 +668,7 @@ namespace BMSZamanBrokerAddOn
                 ARInvoiceForPartner.DocDueDate = InternalConverters.EditTextToDateTime(EditText10.Value);
                 ARInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 ARInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
-                APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+                ARInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
