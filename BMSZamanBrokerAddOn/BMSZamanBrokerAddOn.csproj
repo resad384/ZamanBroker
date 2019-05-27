@@ -46,6 +46,7 @@
     <Reference Include="SAPBusinessOneSDK" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Repository\SalesPersonRepository.cs" />
     <None Include="BTBPaymentForm.b1f">
       <FormCategory>UserForm</FormCategory>
     </None>
@@ -62,7 +63,7 @@
     <Compile Include="Opportunity.b1f.cs">
       <DependentUpon>Opportunity.b1f</DependentUpon>
     </Compile>
-    <Compile Include="OpportunityRepository.cs" />
+    <Compile Include="Repository\OpportunityRepository.cs" />
     <Compile Include="Payments.b1f.cs">
       <DependentUpon>Payments.b1f</DependentUpon>
     </Compile>

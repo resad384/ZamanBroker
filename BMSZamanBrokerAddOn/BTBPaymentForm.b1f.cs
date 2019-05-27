@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BMSZamanBrokerAddOn.Helpers;
 using BMSZamanBrokerAddOn.Model;
+using BMSZamanBrokerAddOn.Repository;
 using SAPbobsCOM;
 using SAPbouiCOM;
 using SAPbouiCOM.Framework;
@@ -98,22 +99,16 @@ namespace BMSZamanBrokerAddOn
                 EditText3.Value = _opportunity.OpportunityName;
                 EditText1.Value = _opportunity.CardCode;
                 EditText4.Value = _opportunity.CustomerName;
-                EditText12.Value = OpportunityRepository.GetOpportunityRestAmount(_opportunityNumber).ToString();
-
-
-                var salesPerson =
-                    (SalesPersons) SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
-                        .oSalesPersons);
-                salesPerson.GetByKey(_opportunity.SalesPerson);
-                EditText6.Value = salesPerson.SalesEmployeeName;
+                EditText12.Value = (_opportunity.WeightedSumLC - (double) InternalConverters.ConvertStringToDecimal(OpportunityRepository.GetOpportunityUsedAmount(_opportunityNumber).ToString())).ToString();
+                EditText6.Value = SalesPersonRepository.GetNameById(_opportunity.SalesPerson);
                 EditText8.Value = _opportunity.ClosingPercentage + "%";
 
-                var businessPartners =
-                    (BusinessPartners) SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
-                        .oBusinessPartners);
-                businessPartners.GetByKey(_opportunity.CardCode);
-               // businessPartners.ContactEmployees.SetCurrentLine(_opportunity.ContactPerson - 1);
-              //  EditText5.Value = businessPartners.ContactEmployees.Name;
+              //  var businessPartners =
+              //      (BusinessPartners) SapDiConnection.Instance.GetBusinessObject(BoObjectTypes
+              //          .oBusinessPartners);
+              //  businessPartners.GetByKey(_opportunity.CardCode);
+              // // businessPartners.ContactEmployees.SetCurrentLine(_opportunity.ContactPerson - 1);
+              ////  EditText5.Value = businessPartners.ContactEmployees.Name;
 
                 EditText7.Value = _opportunity.StartDate.ToString("dd.MM.yy");
 
@@ -124,11 +119,9 @@ namespace BMSZamanBrokerAddOn
                 foreach (var item in items)
                 {
                     Matrix0.AddRow();
-
                     ((EditText) Matrix0.Columns.Item("#").Cells.Item(count).Specific).Value = count.ToString();
                     ((EditText) Matrix0.Columns.Item("Col_0").Cells.Item(count).Specific).Value = item.Id;
                     ((EditText) Matrix0.Columns.Item("Col_1").Cells.Item(count).Specific).Value = item.Name;
-
                     count++;
                 }
 
@@ -292,6 +285,12 @@ namespace BMSZamanBrokerAddOn
         {
             var answer = Application.SBO_Application.MessageBox("Create Documents For  Opportunity ?", 2, "Yes", "No");
             if (answer == 2) return;
+
+            if (InternalConverters.ConvertStringToDecimal(EditText12.Value ) == 0)
+            {
+                Application.SBO_Application.SetStatusBarMessage("Amount Must Be More Than Zero");
+                return;
+            }
 
             if (ComboBox0.Selected == null)
             {
@@ -525,6 +524,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
             ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
             for (var i = 1; i <= Matrix0.RowCount; i++)
             {
                 ARInvoice.Lines.ItemCode = ((EditText) Matrix0.Columns.Item(1).Cells.Item(i).Specific).Value;
@@ -547,20 +547,17 @@ namespace BMSZamanBrokerAddOn
                                                
                 ARInvoice.Lines.Add();
             }
-
-            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
+            
             ARInvoice.Add();
-            SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
 
+            SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
             if (errCode != 0) return new Result {Code = errCode, Message = errMSG};
             SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);
 
             AddStageToOpportunity(newObjectCode, BoAPARDocumentTypes.bodt_Invoice);
 
             SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
-            if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
             return new Result {Code = errCode, Message = errMSG};
-           
         }
 
         private Result CreateType3()
@@ -580,6 +577,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
             ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
+            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
 
             for (var i = 1; i <= Matrix0.RowCount; i++)
             {
@@ -603,7 +601,7 @@ namespace BMSZamanBrokerAddOn
                 ARInvoice.Lines.Add();
             }
 
-            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
+
             ARInvoice.Add();
 
             SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
@@ -627,6 +625,7 @@ namespace BMSZamanBrokerAddOn
                 APInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 APInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
                 APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+                APInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -650,7 +649,7 @@ namespace BMSZamanBrokerAddOn
                     APInvoiceForPartner.Lines.Add();
                 }
 
-                APInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
+
                 APInvoiceForPartner.Add();
 
                 SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
@@ -669,6 +668,7 @@ namespace BMSZamanBrokerAddOn
                 ARInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 ARInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
                 ARInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+                ARInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -692,7 +692,7 @@ namespace BMSZamanBrokerAddOn
                     ARInvoiceForPartner.Lines.Add();
                 }
 
-                ARInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
+
                 ARInvoiceForPartner.Add();
 
                 SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
@@ -724,6 +724,7 @@ namespace BMSZamanBrokerAddOn
             ARInvoice.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
             ARInvoice.SalesPersonCode = _opportunity.SalesPerson;
             ARInvoice.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
 
             for (var i = 1; i <= Matrix0.RowCount; i++)
             {
@@ -747,14 +748,11 @@ namespace BMSZamanBrokerAddOn
                 ARInvoice.Lines.Add();
             }
 
-            ARInvoice.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
             ARInvoice.Add();
 
             SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
             if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
-
             SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);
-
             AddStageToOpportunity(newObjectCode, BoAPARDocumentTypes.bodt_Invoice);
 
             SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
@@ -772,6 +770,7 @@ namespace BMSZamanBrokerAddOn
                 APInvoiceForPartner.TaxDate = InternalConverters.EditTextToDateTime(EditText11.Value);
                 APInvoiceForPartner.SalesPersonCode = _opportunity.SalesPerson;
                 APInvoiceForPartner.DocCurrency = _opportunity.UserFields.Fields.Item("U_CURRENCY").Value.ToString();
+                APInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
 
                 for (var i = 1; i <= Matrix0.RowCount; i++)
                 {
@@ -795,9 +794,8 @@ namespace BMSZamanBrokerAddOn
                     APInvoiceForPartner.Lines.Add();
                 }
 
-                APInvoiceForPartner.UserFields.Fields.Item("U_OppId").Value = _opportunityNumber;
-                APInvoiceForPartner.Add();
 
+                APInvoiceForPartner.Add();
                 SapDiConnection.Instance.GetLastError(out errCode, out errMSG);
                 if (errCode != 0) return new Result { Code = errCode, Message = errMSG };
                 SapDiConnection.Instance.GetNewObjectCode(out newObjectCode);

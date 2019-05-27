@@ -39,10 +39,11 @@ namespace BMSZamanBrokerAddOn
             return InternalConverters.ConvertStringToDecimal(recordset.Fields.Item(0).Value.ToString());
         }
 
-        public static decimal GetOpportunityRestAmount(int opprotunityId)
+        public static decimal GetOpportunityUsedAmount(int opprotunityId)
         {
             var recordset = (Recordset)SapDiConnection.Instance.GetBusinessObject(BoObjectTypes.BoRecordset);
-            string sql = "select \"MaxSumLoc\" - (select IFNULL(SUM(case when  t1.\"DocCur\" = \'AZN\' then t1.\"DocTotal\" else t1.\"DocTotalFC\" end),0)  \"Total\" from \"OPR1\"  t0\r\nleft join \"OINV\" t1 on t0.\"DocNumber\" = t1.\"DocNum\"\r\nwhere  t0.\"OpprId\" = \'{0}\'  and t0.\"ObjType\" = 13)  from \"OOPR\" where  \"OpprId\" = \'{0}\'";
+            string sql =
+                "select IFNULL(SUM(t1.\"DocTotalFC\"),0) as \"Total\" from \"OPR1\" t0 \r\nleft join \"OINV\" t1 on t1.\"DocNum\" = t0.\"DocNumber\"  where t0.\"OpprId\" = {0} and t0.\"ObjType\" = 13\r\nand t1.\"CardCode\" not in (SELECT t2.\"RelatCard\" FROM \"OPR2\" t2 where t2.\"OpportId\" = {0} )\r\n";
             sql = String.Format(sql, opprotunityId);
             recordset.DoQuery(sql);
             recordset.MoveFirst();
